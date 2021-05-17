@@ -1,0 +1,138 @@
+#include "pch.h"
+#include <iostream>
+
+
+
+class FazzyNumber {
+
+public:
+	FazzyNumber(double, double, double);
+	FazzyNumber(const FazzyNumber&);
+
+	FazzyNumber getInverted() const;
+
+	FazzyNumber operator+ (const FazzyNumber&);
+	FazzyNumber operator- (const FazzyNumber&);
+	FazzyNumber operator* (const FazzyNumber&);
+	FazzyNumber operator/ (const FazzyNumber&);
+	friend std::ostream& operator<<(std::ostream&, const FazzyNumber&);
+
+private:
+	double mMid;
+	double mLeft;
+	double mRight;
+
+};
+
+
+
+int main(int argc, char argv[]) {
+
+	setlocale(LC_ALL, "ru");
+
+
+	double a, b, c;
+	   
+
+	std::cout << "Введите поочерёдно al, A и ar:\n";
+	std::cin >> a >> b >> c;
+	FazzyNumber fn1(a, b, c);
+
+	std::cout << "Введите поочерёдно bl, B и br:\n";
+	std::cin >> a >> b >> c;
+	FazzyNumber fn2 = FazzyNumber(a, b, c);
+
+	std::cout << "\nСумма: " << fn1 + fn2 << std::endl;
+	std::cout << "\nРазность: " << fn1 - fn2 << std::endl;
+	std::cout << "\nПроизведение: " << fn1 * fn2 << std::endl;
+	std::cout << "\nЧастное: " << fn1 / fn2 << std::endl;
+	std::cout << "\nОбратное: " << fn1.getInverted() << std::endl;
+
+
+	return 0;
+}
+
+
+
+FazzyNumber::FazzyNumber(double left, double mid, double right) {
+
+	mMid = mid;
+	mLeft = left;
+	mRight = right;
+}
+
+
+
+FazzyNumber::FazzyNumber(const FazzyNumber& obj) {
+
+	mMid = obj.mMid;
+	mLeft = obj.mLeft;
+	mRight = obj.mRight;
+}
+
+
+
+FazzyNumber FazzyNumber::getInverted() const {
+
+	return FazzyNumber(
+		1.0 / mLeft,
+		1.0 / mMid,
+		1.0 / mRight
+	);
+}
+
+
+
+FazzyNumber FazzyNumber::operator+ (const FazzyNumber& obj) {
+
+	FazzyNumber ret(
+		mMid + obj.mMid - mLeft - obj.mLeft,
+		mMid + obj.mMid,
+		mMid + obj.mMid + mRight + obj.mRight
+	);
+	return ret;
+}
+
+
+
+FazzyNumber FazzyNumber::operator- (const FazzyNumber& obj) {
+
+	FazzyNumber ret(
+		mMid - obj.mMid - mLeft - obj.mLeft,
+		mMid - obj.mMid,
+		mMid - obj.mMid + mRight + obj.mRight
+	);
+	return ret;
+}
+
+
+
+FazzyNumber FazzyNumber::operator* (const FazzyNumber& obj) {
+
+	FazzyNumber ret(
+		mMid * (obj.mMid - obj.mLeft) + mLeft * (obj.mLeft - obj.mMid),
+		mMid * obj.mMid,
+		mMid * (obj.mMid + obj.mRight) + mRight * (obj.mRight + obj.mMid)
+	);
+	return ret;
+}
+
+
+
+FazzyNumber FazzyNumber::operator/ (const FazzyNumber& obj) {
+
+	FazzyNumber ret(
+		(mMid - mLeft) / (obj.mMid + obj.mRight),
+		mMid / obj.mMid,
+		(mMid + mRight) / (obj.mMid - obj.mLeft)
+	);
+	return ret;
+}
+
+
+
+std::ostream& operator<<(std::ostream& os, const FazzyNumber& obj) {
+
+	os << "al = " << obj.mLeft << ", A = " << obj.mMid << ", ar = " << obj.mRight << std::endl;
+	return os;
+}
